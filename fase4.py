@@ -10,7 +10,7 @@ class Estudiante:
         print("Edad:", self.edad)
         print("Nota:", self.nota)
 
-
+print("Bienvenido al sistema académico")
 class SistemaAcademico:
     def __init__(self):
         self.estudiantes = []
