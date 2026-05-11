@@ -1,117 +1,138 @@
 # Sistema académico desarrollado en Python
+import logging
+
+logging.basicConfig(
+    filename="logs.txt",
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+class ErrorNota(Exception):
+    pass
+
+class ErrorEdad(Exception):
+    pass
+
+
 class Estudiante:
     def __init__(self, nombre, edad, nota):
         self.nombre = nombre
         self.edad = edad
         self.nota = nota
 
-    def mostrar_informacion(self):
-        print("Nombre:", self.nombre)
-        print("Edad:", self.edad)
-        print("Nota:", self.nota)
+    def mostrar(self):
+        print(f"Nombre: {self.nombre}")
+        print(f"Edad: {self.edad}")
+        print(f"Nota: {self.nota}")
 
-print("Bienvenido al sistema académico")
+
 class SistemaAcademico:
     def __init__(self):
         self.estudiantes = []
 
     def registrar_estudiante(self):
+
         try:
-            nombre = input("Ingrese el nombre del estudiante: ").strip()
+            nombre = input("Ingrese nombre: ").strip()
 
             if nombre == "":
-                raise ValueError("El nombre no puede estar vacío")
+                raise ValueError("El nombre está vacío")
 
-            edad = int(input("Ingrese la edad del estudiante: "))
+            edad = int(input("Ingrese edad: "))
 
             if edad <= 0:
-                raise ValueError("La edad debe ser mayor que cero")
+                raise ErrorEdad("La edad debe ser positiva")
 
-            nota = float(input("Ingrese la nota final del estudiante: "))
+            nota = float(input("Ingrese nota: "))
 
             if nota < 0 or nota > 5:
-                raise ValueError("La nota debe estar entre 0 y 5")
-
-            estudiante = Estudiante(nombre, edad, nota)
-            self.estudiantes.append(estudiante)
-
-            print("Estudiante registrado correctamente")
+                raise ErrorNota("La nota debe estar entre 0 y 5")
 
         except ValueError as error:
-            print("Error en los datos ingresados:", error)
+            logging.error(error)
+            print("Error:", error)
+
+        except ErrorEdad as error:
+            logging.error(error)
+            print("Error:", error)
+
+        except ErrorNota as error:
+            logging.error(error)
+            print("Error:", error)
 
         except Exception as error:
-            print("Ocurrió un error inesperado:", error)
+            logging.error(error)
+            print("Ocurrió un error inesperado")
+
+        else:
+            estudiante = Estudiante(nombre, edad, nota)
+            self.estudiantes.append(estudiante)
+            print("Estudiante registrado correctamente")
 
         finally:
-            print("Proceso de registro finalizado\n")
+            print("Proceso finalizado\n")
 
     def mostrar_estudiantes(self):
+
         try:
+
             if len(self.estudiantes) == 0:
                 raise Exception("No hay estudiantes registrados")
 
-            print("\nListado de estudiantes")
-            print("----------------------")
-
             for estudiante in self.estudiantes:
-                estudiante.mostrar_informacion()
-                print("----------------------")
+                print("----------------")
+                estudiante.mostrar()
 
         except Exception as error:
-            print("Aviso:", error)
+            logging.error(error)
+            print(error)
 
     def buscar_estudiante(self):
-        try:
-            nombre_buscar = input("Ingrese el nombre a buscar: ").strip()
 
-            if nombre_buscar == "":
-                raise ValueError("Debe ingresar un nombre para buscar")
+        try:
+            nombre = input("Ingrese nombre a buscar: ")
 
             encontrado = False
 
             for estudiante in self.estudiantes:
-                if estudiante.nombre.lower() == nombre_buscar.lower():
-                    print("Estudiante encontrado:")
-                    estudiante.mostrar_informacion()
+
+                if estudiante.nombre.lower() == nombre.lower():
+                    estudiante.mostrar()
                     encontrado = True
 
             if not encontrado:
-                raise Exception("No se encontró un estudiante con ese nombre")
-
-        except ValueError as error:
-            print("Error:", error)
+                raise Exception("Estudiante no encontrado")
 
         except Exception as error:
-            print("Aviso:", error)
+            logging.error(error)
+            print(error)
 
     def eliminar_estudiante(self):
-        try:
-            nombre_eliminar = input("Ingrese el nombre del estudiante a eliminar: ").strip()
 
-            if nombre_eliminar == "":
-                raise ValueError("Debe ingresar un nombre válido")
+        try:
+            nombre = input("Ingrese nombre a eliminar: ")
 
             for estudiante in self.estudiantes:
-                if estudiante.nombre.lower() == nombre_eliminar.lower():
+
+                if estudiante.nombre.lower() == nombre.lower():
                     self.estudiantes.remove(estudiante)
-                    print("Estudiante eliminado correctamente")
+                    print("Estudiante eliminado")
                     return
 
-            raise Exception("No se encontró el estudiante para eliminar")
-
-        except ValueError as error:
-            print("Error:", error)
+            raise Exception("No existe ese estudiante")
 
         except Exception as error:
-            print("Aviso:", error)
+            logging.error(error)
+            print(error)
 
+
+print("Bienvenido al sistema académico")
 
 sistema = SistemaAcademico()
 
 while True:
-    print("\nSISTEMA ACADÉMICO")
-    print("1. Registrar estudiante")
+
+    print("\n1. Registrar estudiante")
     print("2. Mostrar estudiantes")
     print("3. Buscar estudiante")
     print("4. Eliminar estudiante")
@@ -136,4 +157,5 @@ while True:
         break
 
     else:
+        print("Opción inválida")
         print("Opción inválida. Intente nuevamente")
