@@ -12,7 +12,7 @@ El sistema permite:
 - Eliminar estudiantes
 - Validar errores de entrada
 
-El objetivo principal es garantizar estabilidad y control de errores durante la ejecución del programa.
+El objetivo principal es garantizar que sea un proceso facil, un programa facil de usar
 
 ---
 
