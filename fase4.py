@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 
-RUTA_LOG = "C:/Users/Public/logs.txt"
+CARPETA_ACTUAL = os.path.dirname(os.path.abspath(__file__))
+RUTA_LOG = os.path.join(CARPETA_ACTUAL, "logs.txt")
 
 
 def guardar_log(tipo, mensaje):
@@ -18,6 +20,7 @@ class ErrorEdad(Exception):
 
 
 class Estudiante:
+
     def __init__(self, nombre, edad, nota):
         self.nombre = nombre
         self.edad = edad
@@ -30,11 +33,14 @@ class Estudiante:
 
 
 class SistemaAcademico:
+
     def __init__(self):
         self.estudiantes = []
 
     def registrar_estudiante(self):
+
         try:
+
             nombre = input("Ingrese nombre: ")
 
             if nombre.strip() == "":
@@ -51,86 +57,123 @@ class SistemaAcademico:
                 raise ErrorNota("La nota debe estar entre 0 y 5")
 
             estudiante = Estudiante(nombre, edad, nota)
+
             self.estudiantes.append(estudiante)
 
         except ValueError as error:
+
             guardar_log("ERROR", error)
+
             print("Error:", error)
 
         except ErrorEdad as error:
+
             guardar_log("ERROR", error)
+
             print("Error:", error)
 
         except ErrorNota as error:
+
             guardar_log("ERROR", error)
+
             print("Error:", error)
 
         except Exception as error:
+
             guardar_log("ERROR", error)
+
             print("Error inesperado:", error)
 
         else:
+
             guardar_log("INFO", "Estudiante registrado correctamente")
+
             print("Estudiante registrado correctamente")
 
         finally:
+
             print("Proceso finalizado")
 
     def mostrar_estudiantes(self):
+
         try:
+
             if len(self.estudiantes) == 0:
                 raise Exception("No hay estudiantes registrados")
 
             for estudiante in self.estudiantes:
+
                 estudiante.mostrar()
 
         except Exception as error:
+
             guardar_log("ERROR", error)
+
             print(error)
 
     def buscar_estudiante(self):
+
         try:
+
             nombre = input("Ingrese nombre a buscar: ")
 
             encontrado = False
 
             for estudiante in self.estudiantes:
+
                 if estudiante.nombre.lower() == nombre.lower():
+
                     estudiante.mostrar()
+
                     encontrado = True
 
             if not encontrado:
+
                 raise Exception("Estudiante no encontrado")
 
         except Exception as error:
+
             guardar_log("ERROR", error)
+
             print(error)
 
     def eliminar_estudiante(self):
+
         try:
+
             nombre = input("Ingrese nombre a eliminar: ")
 
             for estudiante in self.estudiantes:
+
                 if estudiante.nombre.lower() == nombre.lower():
+
                     self.estudiantes.remove(estudiante)
-                    guardar_log("INFO", "Estudiante eliminado correctamente")
+
+                    guardar_log("INFO", "Estudiante eliminado")
+
                     print("Estudiante eliminado correctamente")
+
                     return
 
             raise Exception("No existe ese estudiante")
 
         except Exception as error:
+
             guardar_log("ERROR", error)
+
             print(error)
 
 
 print("Bienvenido al sistema académico")
+
 guardar_log("INFO", "Inicio del sistema")
 
 sistema = SistemaAcademico()
 
 while True:
+
     try:
+
         print("\n1. Registrar estudiante")
         print("2. Mostrar estudiantes")
         print("3. Buscar estudiante")
@@ -140,28 +183,39 @@ while True:
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
+
             sistema.registrar_estudiante()
 
         elif opcion == "2":
+
             sistema.mostrar_estudiantes()
 
         elif opcion == "3":
+
             sistema.buscar_estudiante()
 
         elif opcion == "4":
+
             sistema.eliminar_estudiante()
 
         elif opcion == "5":
+
             guardar_log("INFO", "Programa finalizado")
+
             print("Programa finalizado")
+
             break
 
         else:
-            guardar_log("ERROR", "Opción inválida ingresada")
+
+            guardar_log("ERROR", "Opción inválida")
+
             print("Opción inválida")
 
     except Exception as error:
+
         guardar_log("ERROR", error)
+
         print("Error general:", error)
 
 input("\nPresione Enter para cerrar...")
