@@ -1,3 +1,4 @@
+# Sistema académico desarrollado en Python
 class Estudiante:
     def __init__(self, nombre, edad, nota):
         self.nombre = nombre
