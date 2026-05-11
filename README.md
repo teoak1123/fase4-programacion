@@ -13,6 +13,11 @@ El sistema permite:
 - Validar errores de entrada
 
 El objetivo principal es garantizar que sea un proceso facil, un programa facil de usar
+Para ejecutar el programa se debe abrir la terminal en la carpeta del proyecto y usar:
+
+python fase4.py
+
+El archivo logs.txt se genera automáticamente en la misma carpeta del proyecto.
 
 ---
 
