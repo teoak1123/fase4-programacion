@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from datetime import datetime
 import os
 
@@ -11,72 +12,161 @@ def guardar_log(tipo, mensaje):
         archivo.write(f"{fecha} - {tipo} - {mensaje}\n")
 
 
-class ErrorNota(Exception):
+class ErrorDatoInvalido(Exception):
     pass
 
 
-class ErrorEdad(Exception):
+class ErrorServicioNoDisponible(Exception):
     pass
 
 
-class Estudiante:
+class ErrorReserva(Exception):
+    pass
 
-    def __init__(self, nombre, edad, nota):
+
+class EntidadSistema(ABC):
+
+    @abstractmethod
+    def mostrar_info(self):
+        pass
+
+
+class Cliente(EntidadSistema):
+
+    def __init__(self, nombre, documento, correo):
+
+        if not nombre.strip():
+            raise ErrorDatoInvalido("El nombre no puede estar vacío")
+
+        if not documento.strip():
+            raise ErrorDatoInvalido("El documento no puede estar vacío")
+
+        if "@" not in correo:
+            raise ErrorDatoInvalido("Correo electrónico inválido")
+
+        self.__nombre = nombre
+        self.__documento = documento
+        self.__correo = correo
+
+    def mostrar_info(self):
+        return (
+            f"Cliente: {self.__nombre} | "
+            f"Documento: {self.__documento} | "
+            f"Correo: {self.__correo}"
+        )
+
+    def get_nombre(self):
+        return self.__nombre
+
+
+class Servicio(ABC):
+
+    def __init__(self, nombre, precio_base, disponible=True):
+
+        if precio_base <= 0:
+            raise ErrorDatoInvalido("El precio base debe ser mayor que cero")
+
         self.nombre = nombre
-        self.edad = edad
-        self.nota = nota
+        self.precio_base = precio_base
+        self.disponible = disponible
 
-    def mostrar(self):
-        print("\nNombre:", self.nombre)
-        print("Edad:", self.edad)
-        print("Nota:", self.nota)
+    @abstractmethod
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        pass
+
+    @abstractmethod
+    def describir_servicio(self):
+        pass
+
+    def validar_disponibilidad(self):
+
+        if not self.disponible:
+            raise ErrorServicioNoDisponible(
+                f"El servicio {self.nombre} no está disponible"
+            )
 
 
-class SistemaAcademico:
+class ReservaSala(Servicio):
 
-    def __init__(self):
-        self.estudiantes = []
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        return (self.precio_base * duracion - descuento) + impuesto
 
-    def registrar_estudiante(self):
+    def describir_servicio(self):
+        return "Reserva de salas empresariales"
+
+
+class AlquilerEquipo(Servicio):
+
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+        return (self.precio_base * duracion - descuento) + impuesto
+
+    def describir_servicio(self):
+        return "Alquiler de equipos tecnológicos"
+
+
+class AsesoriaEspecializada(Servicio):
+
+    def calcular_costo(self, duracion, descuento=0, impuesto=0):
+
+        costo = self.precio_base * duracion
+        recargo = costo * 0.20
+
+        return (costo + recargo - descuento) + impuesto
+
+    def describir_servicio(self):
+        return "Asesoría especializada profesional"
+
+
+class Reserva:
+
+    def __init__(self, cliente, servicio, duracion):
+
+        if duracion <= 0:
+            raise ErrorReserva(
+                "La duración de la reserva debe ser mayor que cero"
+            )
+
+        self.cliente = cliente
+        self.servicio = servicio
+        self.duracion = duracion
+        self.estado = "Pendiente"
+
+    def confirmar(self):
 
         try:
+            self.servicio.validar_disponibilidad()
 
-            nombre = input("Ingrese nombre: ")
+        except ErrorServicioNoDisponible as error:
+            raise ErrorReserva(
+                "No fue posible confirmar la reserva"
+            ) from error
 
-            if nombre.strip() == "":
-                raise ValueError("El nombre no puede estar vacío")
+        else:
+            self.estado = "Confirmada"
+            guardar_log("INFO", "Reserva confirmada correctamente")
 
-            edad = int(input("Ingrese edad: "))
+    def cancelar(self):
 
-            if edad <= 0:
-                raise ErrorEdad("La edad debe ser mayor que cero")
+        self.estado = "Cancelada"
 
-            nota = float(input("Ingrese nota: "))
+        guardar_log("INFO", "Reserva cancelada")
 
-            if nota < 0 or nota > 5:
-                raise ErrorNota("La nota debe estar entre 0 y 5")
+    def procesar(self):
 
-            estudiante = Estudiante(nombre, edad, nota)
+        try:
+            self.confirmar()
 
-            self.estudiantes.append(estudiante)
+            costo = self.servicio.calcular_costo(
+                self.duracion,
+                descuento=5000,
+                impuesto=3000
+            )
 
-        except ValueError as error:
-
-            guardar_log("ERROR", error)
-
-            print("Error:", error)
-
-        except ErrorEdad as error:
-
-            guardar_log("ERROR", error)
-
-            print("Error:", error)
-
-        except ErrorNota as error:
+        except ErrorReserva as error:
 
             guardar_log("ERROR", error)
 
-            print("Error:", error)
+            print("Error en la reserva:", error)
 
         except Exception as error:
 
@@ -86,136 +176,134 @@ class SistemaAcademico:
 
         else:
 
-            guardar_log("INFO", "Estudiante registrado correctamente")
+            print("\n===== RESERVA PROCESADA =====")
+            print(self.cliente.mostrar_info())
+            print("Servicio:", self.servicio.nombre)
+            print("Descripción:", self.servicio.describir_servicio())
+            print("Duración:", self.duracion, "horas")
+            print("Costo total:", costo)
+            print("Estado:", self.estado)
 
-            print("Estudiante registrado correctamente")
+            guardar_log("INFO", "Reserva procesada correctamente")
 
         finally:
 
             print("Proceso finalizado")
 
-    def mostrar_estudiantes(self):
 
-        try:
-
-            if len(self.estudiantes) == 0:
-                raise Exception("No hay estudiantes registrados")
-
-            for estudiante in self.estudiantes:
-
-                estudiante.mostrar()
-
-        except Exception as error:
-
-            guardar_log("ERROR", error)
-
-            print(error)
-
-    def buscar_estudiante(self):
-
-        try:
-
-            nombre = input("Ingrese nombre a buscar: ")
-
-            encontrado = False
-
-            for estudiante in self.estudiantes:
-
-                if estudiante.nombre.lower() == nombre.lower():
-
-                    estudiante.mostrar()
-
-                    encontrado = True
-
-            if not encontrado:
-
-                raise Exception("Estudiante no encontrado")
-
-        except Exception as error:
-
-            guardar_log("ERROR", error)
-
-            print(error)
-
-    def eliminar_estudiante(self):
-
-        try:
-
-            nombre = input("Ingrese nombre a eliminar: ")
-
-            for estudiante in self.estudiantes:
-
-                if estudiante.nombre.lower() == nombre.lower():
-
-                    self.estudiantes.remove(estudiante)
-
-                    guardar_log("INFO", "Estudiante eliminado")
-
-                    print("Estudiante eliminado correctamente")
-
-                    return
-
-            raise Exception("No existe ese estudiante")
-
-        except Exception as error:
-
-            guardar_log("ERROR", error)
-
-            print(error)
+clientes = []
+servicios = []
+reservas = []
 
 
-print("Bienvenido al sistema académico")
+try:
 
-guardar_log("INFO", "Inicio del sistema")
+    guardar_log("INFO", "Inicio del sistema Software FJ")
 
-sistema = SistemaAcademico()
+    print("\n===== SOFTWARE FJ =====")
 
-while True:
+    cliente1 = Cliente(
+        "Carlos Pérez",
+        "1001",
+        "carlos@email.com"
+    )
+
+    clientes.append(cliente1)
+
+    guardar_log("INFO", "Cliente válido registrado")
 
     try:
-
-        print("\n1. Registrar estudiante")
-        print("2. Mostrar estudiantes")
-        print("3. Buscar estudiante")
-        print("4. Eliminar estudiante")
-        print("5. Salir")
-
-        opcion = input("Seleccione una opción: ")
-
-        if opcion == "1":
-
-            sistema.registrar_estudiante()
-
-        elif opcion == "2":
-
-            sistema.mostrar_estudiantes()
-
-        elif opcion == "3":
-
-            sistema.buscar_estudiante()
-
-        elif opcion == "4":
-
-            sistema.eliminar_estudiante()
-
-        elif opcion == "5":
-
-            guardar_log("INFO", "Programa finalizado")
-
-            print("Programa finalizado")
-
-            break
-
-        else:
-
-            guardar_log("ERROR", "Opción inválida")
-
-            print("Opción inválida")
+        cliente2 = Cliente("", "1002", "correo@email.com")
 
     except Exception as error:
-
         guardar_log("ERROR", error)
+        print("Cliente inválido:", error)
 
-        print("Error general:", error)
+    try:
+        cliente3 = Cliente("Ana", "1003", "correo_invalido")
 
-input("\nPresione Enter para cerrar...")
+    except Exception as error:
+        guardar_log("ERROR", error)
+        print("Correo inválido:", error)
+
+    servicio1 = ReservaSala(
+        "Sala Ejecutiva",
+        30000,
+        True
+    )
+
+    servicios.append(servicio1)
+
+    guardar_log("INFO", "Servicio de sala creado")
+
+    servicio2 = AlquilerEquipo(
+        "Video Beam",
+        20000,
+        True
+    )
+
+    servicios.append(servicio2)
+
+    guardar_log("INFO", "Servicio de equipo creado")
+
+    servicio3 = AsesoriaEspecializada(
+        "Asesoría Software",
+        50000,
+        False
+    )
+
+    servicios.append(servicio3)
+
+    guardar_log("INFO", "Servicio no disponible registrado")
+
+    try:
+        servicio4 = ReservaSala(
+            "Sala Básica",
+            -10000,
+            True
+        )
+
+    except Exception as error:
+        guardar_log("ERROR", error)
+        print("Servicio inválido:", error)
+
+    reserva1 = Reserva(cliente1, servicio1, 2)
+
+    reservas.append(reserva1)
+
+    reserva1.procesar()
+
+    try:
+        reserva2 = Reserva(cliente1, servicio2, 0)
+
+    except Exception as error:
+        guardar_log("ERROR", error)
+        print("Reserva inválida:", error)
+
+    reserva3 = Reserva(cliente1, servicio3, 3)
+
+    reservas.append(reserva3)
+
+    reserva3.procesar()
+
+    reserva1.cancelar()
+
+    print("\nReserva cancelada correctamente")
+
+    reserva4 = Reserva(cliente1, servicio2, 5)
+
+    reservas.append(reserva4)
+
+    reserva4.procesar()
+
+except Exception as error:
+
+    guardar_log("ERROR", error)
+
+    print("Error general del sistema:", error)
+
+finally:
+
+    guardar_log("INFO", "Fin de ejecución del sistema")
+
+    input("\nPresione Enter para cerrar...")
