@@ -1,43 +1,40 @@
-# Sistema Académico con Manejo de Excepciones
+# Sistema Integral de Gestión de Clientes, Servicios y Reservas - Software FJ
 
 ## Descripción
 
-Este proyecto fue desarrollado en Python utilizando programación orientada a objetos y manejo de excepciones.
+Este proyecto fue desarrollado en Python utilizando programación orientada a objetos.
 
-El sistema permite:
+El sistema permite gestionar clientes, servicios y reservas para la empresa Software FJ sin utilizar bases de datos.
 
-- Registrar estudiantes
-- Mostrar estudiantes registrados
-- Buscar estudiantes
-- Eliminar estudiantes
-- Validar errores de entrada
+El proyecto implementa:
 
-El objetivo principal es garantizar que sea un proceso facil, un programa facil de usar
-Para ejecutar el programa se debe abrir la terminal en la carpeta del proyecto y usar:
-
-python fase4.py
-
-El archivo logs.txt se genera automáticamente en la misma carpeta del proyecto.
-
----
+- Abstracción
+- Herencia
+- Polimorfismo
+- Encapsulación
+- Manejo avanzado de excepciones
+- Encadenamiento de excepciones
+- Registro de logs
+- Simulaciones válidas e inválidas
 
 ## Funcionalidades
 
-- Uso de clases y objetos
+- Registro de clientes
 - Validación de datos
-- Manejo de excepciones con try, except y finally
-- Control de errores en edad y notas
-- Menú interactivo en consola
-
----
+- Gestión de reservas
+- Servicios especializados
+- Confirmación y cancelación de reservas
+- Registro automático de errores y eventos
 
 ## Tecnologías utilizadas
 
 - Python 3
+- Programación Orientada a Objetos
 - GitHub
 
----
+## Ejecución
 
-## Autor
+Abrir la terminal en la carpeta del proyecto y ejecutar:
 
-Mateo Uribe
+```bash
+python fase4.py
