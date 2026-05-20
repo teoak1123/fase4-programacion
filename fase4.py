@@ -172,7 +172,7 @@ class Reserva:
             print("Error inesperado:", error)
 
         else:
-            print("\n===== RESERVA PROCESADA =====")
+            print("Reserva procesada correctamente")
             print(self.cliente.mostrar_info())
             print("Servicio:", self.servicio.nombre)
             print("Descripción:", self.servicio.describir_servicio())
@@ -194,160 +194,205 @@ def ejecutar_simulaciones():
     guardar_log("INFO", "Inicio del sistema Software FJ")
 
     print("\n===== SOFTWARE FJ =====")
-    print("Simulación del sistema de clientes, servicios y reservas\n")
+    print("Sistema Integral de Gestión de Clientes, Servicios y Reservas")
+    print("Simulaciones válidas e inválidas para evidenciar excepciones, logs y estabilidad.\n")
 
+    print("Operación 1: Registro de cliente válido")
     try:
         cliente1 = Cliente("Carlos Pérez", "1001", "carlos@email.com")
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         clientes.append(cliente1)
         guardar_log("INFO", "Cliente Carlos Pérez registrado")
+        print("Cliente registrado correctamente")
 
+    print("\nOperación 2: Registro de segundo cliente válido")
     try:
         cliente2 = Cliente("Laura Gómez", "1002", "laura@email.com")
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         clientes.append(cliente2)
         guardar_log("INFO", "Cliente Laura Gómez registrado")
+        print("Cliente registrado correctamente")
 
+    print("\nOperación 3: Registro inválido de cliente sin nombre")
     try:
         Cliente("", "1003", "cliente@email.com")
     except Exception as error:
         guardar_log("ERROR", error)
         print("Cliente inválido:", error)
 
+    print("\nOperación 4: Registro inválido de cliente sin documento")
     try:
         Cliente("Ana Torres", "", "ana@email.com")
     except Exception as error:
         guardar_log("ERROR", error)
         print("Documento inválido:", error)
 
+    print("\nOperación 5: Registro inválido de cliente con correo incorrecto")
     try:
         Cliente("Pedro Ruiz", "1005", "correo_invalido")
     except Exception as error:
         guardar_log("ERROR", error)
         print("Correo inválido:", error)
 
+    print("\nOperación 6: Creación de servicio válido de reserva de sala")
     try:
         servicio1 = ReservaSala("Sala Ejecutiva", 30000, True)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         servicios.append(servicio1)
         guardar_log("INFO", "Servicio Sala Ejecutiva creado")
+        print("Servicio creado correctamente")
 
+    print("\nOperación 7: Creación de servicio válido de alquiler de equipo")
     try:
         servicio2 = AlquilerEquipo("Video Beam", 20000, True)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         servicios.append(servicio2)
         guardar_log("INFO", "Servicio Video Beam creado")
+        print("Servicio creado correctamente")
 
+    print("\nOperación 8: Creación de servicio de asesoría no disponible")
     try:
         servicio3 = AsesoriaEspecializada("Asesoría en Software", 50000, False)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         servicios.append(servicio3)
         guardar_log("INFO", "Servicio Asesoría en Software creado como no disponible")
+        print("Servicio creado correctamente, pero no disponible")
 
+    print("\nOperación 9: Creación de servicio válido de asesoría empresarial")
     try:
         servicio4 = AsesoriaEspecializada("Asesoría Empresarial", 60000, True)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         servicios.append(servicio4)
         guardar_log("INFO", "Servicio Asesoría Empresarial creado")
+        print("Servicio creado correctamente")
 
+    print("\nOperación 10: Creación inválida de servicio con precio negativo")
     try:
         ReservaSala("Sala Básica", -10000, True)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Servicio inválido:", error)
 
+    print("\nOperación 11: Creación inválida de servicio sin nombre")
     try:
         AlquilerEquipo("", 20000, True)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Nombre de servicio inválido:", error)
 
+    print("\nOperación 12: Reserva exitosa de sala ejecutiva")
     try:
         reserva1 = Reserva(clientes[0], servicios[0], 2)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         reservas.append(reserva1)
         reserva1.procesar()
 
+    print("\nOperación 13: Reserva exitosa de alquiler de equipo")
     try:
         reserva2 = Reserva(clientes[1], servicios[1], 5)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         reservas.append(reserva2)
         reserva2.procesar()
 
+    print("\nOperación 14: Reserva exitosa de asesoría empresarial")
     try:
         reserva3 = Reserva(clientes[0], servicios[3], 3)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         reservas.append(reserva3)
         reserva3.procesar()
 
+    print("\nOperación 15: Reserva inválida con duración cero")
     try:
         Reserva(clientes[0], servicios[1], 0)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Reserva inválida:", error)
 
+    print("\nOperación 16: Reserva inválida con duración negativa")
     try:
         Reserva(clientes[1], servicios[0], -4)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Reserva con duración negativa:", error)
 
+    print("\nOperación 17: Reserva fallida por servicio no disponible")
     try:
         reserva4 = Reserva(clientes[0], servicios[2], 3)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
         reservas.append(reserva4)
         reserva4.procesar()
 
+    print("\nOperación 18: Reserva inválida sin cliente")
     try:
-        reserva5 = Reserva(None, servicios[0], 2)
+        Reserva(None, servicios[0], 2)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Reserva sin cliente:", error)
 
+    print("\nOperación 19: Reserva inválida sin servicio")
     try:
-        reserva6 = Reserva(clientes[0], None, 2)
+        Reserva(clientes[0], None, 2)
     except Exception as error:
         guardar_log("ERROR", error)
         print("Reserva sin servicio:", error)
 
+    print("\nOperación 20: Cancelación de reserva existente")
     if reservas:
         reservas[0].cancelar()
 
+    print("\nOperación 21: Nueva reserva exitosa de sala")
     try:
-        reserva7 = Reserva(clientes[1], servicios[0], 4)
+        reserva5 = Reserva(clientes[1], servicios[0], 4)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
-        reservas.append(reserva7)
-        reserva7.procesar()
+        reservas.append(reserva5)
+        reserva5.procesar()
 
+    print("\nOperación 22: Nueva reserva exitosa de equipo")
     try:
-        reserva8 = Reserva(clientes[0], servicios[1], 1)
+        reserva6 = Reserva(clientes[0], servicios[1], 1)
     except Exception as error:
         guardar_log("ERROR", error)
+        print("Error:", error)
     else:
-        reservas.append(reserva8)
-        reserva8.procesar()
+        reservas.append(reserva6)
+        reserva6.procesar()
+
+    print("\nOperación 23: Intento de cancelar nuevamente una reserva cancelada")
+    if reservas:
+        reservas[0].cancelar()
 
     guardar_log("INFO", "Total de clientes válidos registrados: " + str(len(clientes)))
     guardar_log("INFO", "Total de servicios válidos creados: " + str(len(servicios)))
@@ -355,6 +400,7 @@ def ejecutar_simulaciones():
     guardar_log("INFO", "Fin de simulaciones del sistema")
 
     print("\n===== RESUMEN FINAL =====")
+    print("Operaciones simuladas: 23")
     print("Clientes válidos registrados:", len(clientes))
     print("Servicios válidos creados:", len(servicios))
     print("Reservas creadas:", len(reservas))
